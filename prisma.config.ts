@@ -1,9 +1,11 @@
+import path from "node:path";
+import type { PrismaConfig } from "prisma";
+
+process.loadEnvFile();
+
 export default {
-  schema: "src/prisma/schema.prisma",
-
+  schema: path.join("src", "infra", "db", "prisma", "schema.prisma"),
   migrations: {
-    source: "src/infra/db/migrations",
+    path: path.join("src", "infra", "db", "migrations"),
   },
-
-  migrate: {},
-};
+} satisfies PrismaConfig;
