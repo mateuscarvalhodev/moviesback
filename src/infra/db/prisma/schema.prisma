@@ -8,12 +8,12 @@ generator client {
 }
 
 model RefreshToken {
-  id String @id @default(uuid())
-  userId String
+  id        String    @id @default(uuid())
+  userId    String
   tokenHash String
   userAgent String?
-  ip String?
-  createdAt DateTime @default(now())
+  ip        String?
+  createdAt DateTime  @default(now())
   revokedAt DateTime?
   expiresAt DateTime
 
@@ -25,9 +25,85 @@ model RefreshToken {
 }
 
 model User {
-  id    String     @id @default(uuid())
-  name String
-  email String @unique
-  passwordHash String
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  passwordHash  String
   refreshTokens RefreshToken[]
+}
+
+enum ContentRating {
+  ALL_AGES
+  AGE_10
+  AGE_12
+  AGE_14
+  AGE_16
+  AGE_18
+}
+
+enum ReleaseStatus {
+  ANNOUNCED
+  IN_PRODUCTION
+  RELEASED
+  CANCELED
+}
+
+model Studio {
+  id   String @id @default(uuid())
+  name String @unique
+
+  movies Movie[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Genre {
+  id     String  @id @default(uuid())
+  name   String  @unique
+  movies Movie[]
+}
+
+model Movie {
+  id            String  @id @default(uuid())
+  title         String  @unique
+  originalTitle String?
+  subtitle      String?
+  overview      String? @db.Text
+
+  runtimeMinutes Int           @db.SmallInt
+  releaseYear    Int           @db.SmallInt
+  releaseDate    DateTime?
+  contentRating  ContentRating
+  status         ReleaseStatus @default(RELEASED)
+
+  approbation Int?
+  popularity  Decimal? @db.Decimal(10, 2)
+  voteCount   Int?
+  budget      Decimal? @db.Decimal(14, 2)
+  revenue     Decimal? @db.Decimal(14, 2)
+  profit      Decimal? @db.Decimal(14, 2)
+
+  originalLanguage String? @db.VarChar(5)
+  originCountry    String? @db.VarChar(2)
+
+  posterUrl   String?
+  backdropUrl String?
+  trailerUrl  String?
+
+  mailSent Boolean @default(false)
+
+  studio   Studio @relation(fields: [studioId], references: [id])
+  studioId String
+
+  genres Genre[]
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([title, releaseYear, studioId])
+  @@index([releaseYear])
+  @@index([contentRating])
+  @@index([studioId])
 }

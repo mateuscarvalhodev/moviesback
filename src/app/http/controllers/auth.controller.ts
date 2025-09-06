@@ -23,7 +23,6 @@ const loginSchema = z.object({
 
 export const authController = {
   register: async (req: Request, res: Response) => {
-    console.log(req);
     const parsed = registerSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).send(parsed.error);
